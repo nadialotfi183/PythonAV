@@ -18,7 +18,9 @@ def print_report(results: dict, top_n: int = 10) -> None:
     for country, count in results["failed_by_country"].most_common(top_n):
         print(f"  {country:<25} {count}")
 
-    print(f"\nTentatives réussies par utilisateur (top {top_n}) :")
+        print(f"\nTentatives réussies par utilisateur (top {top_n}) :")
+    if not results["success_by_user"]:
+        print("  Aucune connexion réussie dans les logs analysés")
     for user, count in results["success_by_user"].most_common(top_n):
         print(f"  {user:<25} {count}")
     print()
@@ -45,8 +47,12 @@ def show_dashboard(results: dict, top_n: int = 10, output_dir: str = "output") -
 
         if success:
             ax2.barh([u for u, _ in success][::-1], [n for _, n in success][::-1], color="tab:green")
+            ax2.set_xlabel("Nombre de connexions")
+        else:
+            ax2.text(0.5, 0.5, "Aucune connexion réussie\ndans les logs analysés",
+                     ha="center", va="center", fontsize=14)
+            ax2.set_axis_off()
         ax2.set_title("Tentatives réussies par utilisateur")
-        ax2.set_xlabel("Nombre de connexions")
 
         fig.suptitle(f"Invalid user : {results['invalid_user_count']} tentatives échouées")
         fig.tight_layout()
